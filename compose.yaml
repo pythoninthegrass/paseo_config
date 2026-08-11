@@ -1,6 +1,7 @@
 services:
   paseo:
-    image: ghcr.io/getpaseo/paseo:latest
+    image: paseo-with-agents
+    build: .
     container_name: paseo
     restart: unless-stopped
     ports:
