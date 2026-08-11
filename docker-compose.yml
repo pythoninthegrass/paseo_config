@@ -13,3 +13,4 @@ services:
     volumes:
       - ./paseo-home:/home/paseo
       - /home/lance/git:/home/paseo/git
+      - /home/lance/.ssh:/home/paseo/.ssh:ro
