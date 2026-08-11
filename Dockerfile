@@ -21,6 +21,14 @@ RUN <<EOF
   rm -fr /var/lib/apt/lists/*
 EOF
 
+# zelda3 build dependency
+RUN <<EOF
+  set -ex
+  apt-get update
+  apt-get install -y libsdl2-dev
+  rm -fr /var/lib/apt/lists/*
+EOF
+
 # Upstream bug: acp_adapter/tools.py's _tool_result_failed() flags any
 # nonzero exit_code as an ACP "failed" status, even when terminal_tool.py
 # already annotated it exit_code_meaning (e.g. grep/diff "not an error").
