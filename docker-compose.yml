@@ -1,7 +1,10 @@
 services:
   paseo-lance:
-    image: paseo-with-agents
-    build: .
+    image: paseo-with-agents:lance
+    build:
+      context: .
+      args:
+        DISPLAY_USER: lance
     container_name: paseo-lance
     restart: unless-stopped
     ports:
@@ -16,8 +19,11 @@ services:
       - /home/lance/.ssh:/home/paseo/.ssh:ro
 
   paseo-alex:
-    image: paseo-with-agents
-    build: .
+    image: paseo-with-agents:alex
+    build:
+      context: .
+      args:
+        DISPLAY_USER: alex
     container_name: paseo-alex
     restart: unless-stopped
     ports:

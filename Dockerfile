@@ -59,13 +59,27 @@ RUN <<EOF
 EOF
 
 # Container is the isolation boundary, so passwordless sudo here is fine.
+# Keyed by uid, not name, since DISPLAY_USER below aliases uid 1000 to a second name.
 RUN <<EOF
   set -ex
   apt-get update
   apt-get install -y sudo
   rm -fr /var/lib/apt/lists/*
-  echo 'paseo ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/paseo
+  echo '#1000 ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/paseo
   chmod 0440 /etc/sudoers.d/paseo
+EOF
+
+# Cosmetic per-user alias: the daemon always runs as gosu'd uid 1000 ("paseo"
+# in the base image's entrypoint), but glibc's getpwuid() resolves to whichever
+# /etc/passwd entry for that uid comes first, so prepending DISPLAY_USER here
+# makes whoami/id/ps show the human name without touching the entrypoint.
+ARG DISPLAY_USER
+RUN <<EOF
+  set -ex
+  if [ -n "$DISPLAY_USER" ] && [ "$DISPLAY_USER" != "paseo" ]; then
+    sed -i "1i ${DISPLAY_USER}:x:1000:1000::/home/paseo:/bin/bash" /etc/passwd
+    sed -i "1i ${DISPLAY_USER}:!:20670:0:99999:7:::" /etc/shadow
+  fi
 EOF
 
 # build deps
