@@ -35,6 +35,16 @@ RUN <<EOF
   rm -fr /var/lib/apt/lists/*
 EOF
 
+# Container is the isolation boundary, so passwordless sudo here is fine.
+RUN <<EOF
+  set -ex
+  apt-get update
+  apt-get install -y sudo
+  rm -fr /var/lib/apt/lists/*
+  echo 'paseo ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/paseo
+  chmod 0440 /etc/sudoers.d/paseo
+EOF
+
 # build deps
 RUN <<EOF
   set -ex
