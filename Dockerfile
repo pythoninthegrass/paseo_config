@@ -7,8 +7,31 @@ RUN npm install -g \
     opencode-ai \
     @mariozechner/pi-coding-agent
 
+# node-pty (a hermes-agent npm dep) needs these to compile its native addon via node-gyp.
+RUN <<EOF
+  set -ex
+  apt-get update
+  apt-get install -y --no-install-recommends python3 make g++
+  rm -fr /var/lib/apt/lists/*
+EOF
+
 RUN curl -fsSL https://hermes-agent.nousresearch.com/install.sh \
     | bash -s -- --non-interactive --skip-setup
+
+# Default every new user to the shared self-hosted Lemonade endpoint so
+# fresh $HOME volumes work without a manual `hermes config set` pass.
+RUN <<EOF
+  set -ex
+  chown -R paseo:paseo /home/paseo/.hermes
+  su - paseo -c '
+    hermes config set model.provider custom:lemonade
+    hermes config set model.default Qwen3.8-27B-UD-Q8_K_XL
+    hermes config set providers.lemonade.base_url http://host.docker.internal:13305/api/v1
+    hermes config set providers.lemonade.key_env LEMONADE_API_KEY
+    hermes config unset model.base_url || true
+    grep -q "^LEMONADE_API_KEY=" ~/.hermes/.env || printf "LEMONADE_API_KEY=lemonade-local\n" >> ~/.hermes/.env
+  '
+EOF
 
 RUN <<EOF
   set -ex
