@@ -1,8 +1,8 @@
 services:
-  paseo:
+  paseo-lance:
     image: paseo-with-agents
     build: .
-    container_name: paseo
+    container_name: paseo-lance
     restart: unless-stopped
     ports:
       - "6767:6767"
