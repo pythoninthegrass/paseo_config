@@ -21,7 +21,21 @@ RUN <<EOF
   rm -fr /var/lib/apt/lists/*
 EOF
 
-# zelda3 build dependency
+# GitHub CLI: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+RUN <<EOF
+  set -ex
+  apt-get update
+  apt-get install -y curl
+  install -d -m 755 /etc/apt/keyrings
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /etc/apt/keyrings/githubcli-archive-keyring.gpg
+  chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list
+  apt-get update
+  apt-get install -y gh
+  rm -fr /var/lib/apt/lists/*
+EOF
+
+# build deps
 RUN <<EOF
   set -ex
   apt-get update
