@@ -7,6 +7,16 @@ RUN npm install -g \
     opencode-ai \
     @mariozechner/pi-coding-agent
 
+# Paseo's terminal feature spawns env.SHELL || "/bin/sh"; SHELL is unset by
+# default, so without this every in-browser terminal session lands in dash.
+RUN <<EOF
+  set -ex
+  apt-get update
+  apt-get install -y bash
+  rm -fr /var/lib/apt/lists/*
+EOF
+ENV SHELL=/bin/bash
+
 # node-pty (a hermes-agent npm dep) needs these to compile its native addon via node-gyp.
 RUN <<EOF
   set -ex
